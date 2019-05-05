@@ -1,0 +1,22 @@
+<!-- Launch in the camera namespace containing "image_raw" and "camera_info" -->
+<launch>
+  <!-- <param name="use_sim_time" value="true" /> -->
+
+  <arg name="respawn" default="false" />
+  <!-- TODO Arguments for debayer, interpolation methods? -->
+
+  <arg     if="$(arg respawn)" name="bond" value="" />
+  <arg unless="$(arg respawn)" name="bond" value="--no-bond" />
+
+  <node pkg="nodelet" type="nodelet" name="standalone_nodelet" args="manager" output="screen"/>
+
+  <node pkg="nodelet" type="nodelet" name="point_cloud_xyzrgb"
+        args="load depth_image_proc/point_cloud_xyzrgb standalone_nodelet $(arg bond)"
+        respawn="$(arg respawn)"
+        output="screen" >
+    <remap from="rgb/camera_info" to="/device_0/sensor_1/Color_0/info/camera_info" />
+    <remap from="rgb/image_rect_color" to="/device_0/sensor_1/Color_0/image/data" />
+    <remap from="depth_registered/image_rect" to="/device_0/sensor_0/Depth_0/image/data" />
+  </node>
+
+</launch>
